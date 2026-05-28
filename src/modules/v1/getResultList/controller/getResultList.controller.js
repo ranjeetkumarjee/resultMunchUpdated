@@ -6,15 +6,15 @@ export const getResultListController = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "Jobs fetched successfully",
+      message: "Results fetched successfully",
       ...result,
     });
   } catch (error) {
-    console.error("Get Jobs Error:", error);
+    console.error("Get Results Error:", error);
 
     return res.status(500).json({
       success: false,
-      message: "Failed to fetch jobs",
+      message: "Failed to fetch results",
     });
   }
 };

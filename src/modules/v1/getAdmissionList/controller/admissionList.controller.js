@@ -1,4 +1,3 @@
-// import { getAdmissionListServices } from "../services/getAdmissionList.services.js";
 import { getAdmissionListServices } from "../services/admissionList.services.js";
 
 export const getAdmissionListController = async (req, res) => {

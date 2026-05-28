@@ -10,7 +10,7 @@ export async function getResultListServices(query) {
     // Aggregation pipeline
     const result = await UniqueJob.aggregate([
       {
-        $match: { isJob: true }, // only jobs
+        $match: { isResultReleased: true }, // only released results
       },
       //   {
       //     $sort: { createdAt: -1 }, // latest first
