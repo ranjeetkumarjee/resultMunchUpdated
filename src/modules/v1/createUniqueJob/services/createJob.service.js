@@ -4,7 +4,6 @@ import { UniqueJob } from "../model/createUniquejob.js";
  */
 export const createJobService = async (payload) => {
   try {
-    console.log("service:");
     // Duplicate check (better: use UNIQUE index in schema)
     const existingJob = await UniqueJob.findOne({
       advertisementNo: payload.advertisementNo,
@@ -40,7 +39,7 @@ export const createJobService = async (payload) => {
 
 export const getAllJobsService = async () => {
   try {
-    const jobs = await UniqueJob.find().lean();
+    const jobs = await UniqueJob.find().sort({ createdAt: -1 }).lean();
 
     return {
       success: true,

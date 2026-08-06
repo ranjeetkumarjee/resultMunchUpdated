@@ -102,53 +102,60 @@ const HeadingLinkSchema = new mongoose.Schema({
 
 const UniquejobSchema = new mongoose.Schema(
   {
+    // Publish state: false = draft/hidden, true = visible to public
+    isPublished: {
+      type: Boolean,
+      default: false,
+    },
+    // Who created the job ("admin" or the employee's userId)
+    createdBy: {
+      type: String,
+    },
     isJob: {
       type: Boolean,
-      required: true,
     },
     label: {
       type: String,
-      required: true,
     },
     isDocument: {
       type: Boolean,
-      required: true,
+      
     },
     documentHeading: {
       type: String,
-      required: true,
+     
     },
     isAdmission: {
       type: Boolean,
-      required: true,
+      
     },
     admissionHeading: {
       type: String,
-      required: true,
+     
     },
     isAnswerKey: {
       type: Boolean,
-      required: true,
+     
     },
     answerKeyHeading: {
       type: String,
-      required: true,
+     
     },
     isResultReleased: {
       type: Boolean,
-      required: true,
+     
     },
     resultHeading: {
       type: String,
-      required: true,
+     
     },
     isAdmitCardReleased: {
       type: Boolean,
-      required: true,
+      
     },
     admitCardHeading: {
       type: String,
-      required: true,
+     
     },
     title: {
       type: String,
@@ -201,10 +208,6 @@ const UniquejobSchema = new mongoose.Schema(
     postsWithNoVaccancy: [PostyWithNoVaccancySchema],
     postsWithElligibility: [PostyWithElligibilitySchema],
     headingLinks: [HeadingLinkSchema],
-    jobHeading: {
-      type: String,
-      required: true,
-    },
   },
   { timestamps: true },
 );

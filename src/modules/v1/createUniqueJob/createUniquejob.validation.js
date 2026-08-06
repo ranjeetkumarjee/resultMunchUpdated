@@ -1,148 +1,203 @@
 import { z } from "zod";
 
 /**
- * Common Validators
+ * Helpers
  */
+const requiredString = (field) =>
+  z
+    .string({
+      required_error: `${field} is required.`,
+      invalid_type_error: `${field} must be a string.`,
+    })
+    .trim()
+    .min(1, `${field} cannot be empty.`);
 
-// Hex color validator
+const optionalString = (field) =>
+  z
+    .string({
+      invalid_type_error: `${field} must be a string.`,
+    })
+    .trim()
+    .optional();
+
 const colorSchema = z
-  .string()
+  .string({
+    invalid_type_error: "Text color must be a string.",
+  })
   .regex(/^#([0-9A-Fa-f]{6})$/, {
-    message: "Invalid color format. Use hex like #000000",
+    message: "Text color must be a valid hex color (e.g. #000000).",
   })
   .optional()
   .default("#000000");
 
-// Required string helper
-const requiredString = (field) =>
-  z
-    .string()
-    .trim()
-    .min(1, { message: `${field} is required` });
-
-/**
- * Sub Schemas
- */
-
-const importantDateSchema = z.object({
-  label: requiredString("Important date label"),
-  date: requiredString("Important date"),
-  textColor: colorSchema,
-});
-
-const applicationFeeSchema = z.object({
-  label: requiredString("Application fee label"),
-  fee: requiredString("Application fee"),
-  textColor: colorSchema,
-});
-
-const ageLimitSchema = z.object({
-  label: requiredString("Age limit label"),
-  value: requiredString("Age limit value"),
-  textColor: colorSchema,
-});
-
-const postWithNoVacancySchema = z.object({
-  PostLevel: requiredString("Post level"),
-  noVaccancy: requiredString("Number of vacancies"),
-  textColor: colorSchema,
-});
-
-const postWithEligibilitySchema = z.object({
-  PostLevel: requiredString("Post level"),
-  elligibility: requiredString("Eligibility"),
-  textColor: colorSchema,
-});
-
-const headingLinkSchema = z.object({
-  Level: requiredString("Heading level"),
-  Link: z.string().url({ message: "Invalid URL" }),
-  textColor: colorSchema,
-});
-
 /**
  * Main Schema
  */
+export const createJobSchema = z
+  .object({
+    // Flags
+    isJob: z.boolean().optional(),
 
-export const createJobSchema = z.object({
-  // 🔹 Flags
-  isJob: z.boolean({
-    required_error: "isJob is required",
-  }),
+    isDocument: z.boolean().optional(),
 
-  isDocument: z.boolean({
-    required_error: "isDocument is required",
-  }),
+    isAdmission: z.boolean().optional(),
 
-  isAdmission: z.boolean({
-    required_error: "isAdmission is required",
-  }),
+    isAnswerKey: z.boolean().optional(),
 
-  isAnswerKey: z.boolean({
-    required_error: "isAnswerKey is required",
-  }),
+    isResultReleased: z.boolean().optional(),
 
-  isResultReleased: z.boolean({
-    required_error: "isResultReleased is required",
-  }),
+    isAdmitCardReleased: z.boolean().optional(),
 
-  isAdmitCardReleased: z.boolean({
-    required_error: "isAdmitCardReleased is required",
-  }),
+    // Headings
+    label: optionalString("Label"),
 
-  // 🔹 Headings
-  label: requiredString("Label"),
-  documentHeading: requiredString("Document heading"),
-  admissionHeading: requiredString("Admission heading"),
-  answerKeyHeading: requiredString("Answer key heading"),
-  resultHeading: requiredString("Result heading"),
-  admitCardHeading: requiredString("Admit card heading"),
+    documentHeading: optionalString("Document Heading"),
 
-  // 🔹 Main Info
-  title: requiredString("Title"),
-  postDate: requiredString("Post date"),
-  boardName: requiredString("Board name"),
-  postName: requiredString("Post name"),
+    admissionHeading: optionalString("Admission Heading"),
 
-  noOfVacancies: requiredString("Number of vacancies"),
+    answerKeyHeading: optionalString("Answer Key Heading"),
 
-  startDate: requiredString("Start date"),
-  endDate: requiredString("End date"),
+    resultHeading: optionalString("Result Heading"),
 
-  minAgeLimit: requiredString("Minimum age"),
-  maxAgeLimit: requiredString("Maximum age"),
-  ageRefDate: requiredString("Age reference date"),
+    admitCardHeading: optionalString("Admit Card Heading"),
 
-  advertisementNo: requiredString("Advertisement number"),
+    // Main Information
+    title: requiredString("Title"),
 
-  jobHeading: requiredString("Job heading"),
+    postDate: requiredString("Post Date"),
 
-  // 🔹 Arrays
-  importantDates: z
-    .array(importantDateSchema)
-    .min(1, "At least one important date is required"),
+    boardName: requiredString("Board Name"),
 
-  applicationFees: z
-    .array(applicationFeeSchema)
-    .min(1, "At least one application fee is required"),
+    postName: requiredString("Post Name"),
 
-  ageLimits: z
-    .array(ageLimitSchema)
-    .min(1, "At least one age limit is required"),
+    noOfVacancies: requiredString("Number Of Vacancies"),
 
-  postsWithNoVaccancy: z
-    .array(postWithNoVacancySchema)
-    .min(1, "At least one vacancy entry is required"),
+    startDate: requiredString("Application Start Date"),
 
-  postsWithElligibility: z
-    .array(postWithEligibilitySchema)
-    .min(1, "At least one eligibility entry is required"),
+    endDate: requiredString("Application End Date"),
 
-  headingLinks: z
-    .array(headingLinkSchema)
-    .min(1, "At least one heading link is required"),
+    minAgeLimit: requiredString("Minimum Age Limit"),
 
-  // 🔹 Optional fields
-  admitCardHeader: z.string().optional().default(""),
-  resultHeader: z.string().optional().default(""),
-});
+    maxAgeLimit: requiredString("Maximum Age Limit"),
+
+    ageRefDate: requiredString("Age Reference Date"),
+
+    advertisementNo: requiredString("Advertisement Number"),
+
+    // Important Dates
+    importantDates: z
+      .array(
+        z.object({
+          label: requiredString("Important Date Label"),
+          date: requiredString("Important Date"),
+          textColor: colorSchema,
+        })
+      )
+      .default([]),
+
+    // Application Fees
+    applicationFees: z
+      .array(
+        z.object({
+          label: requiredString("Application Fee Label"),
+          fee: requiredString("Application Fee"),
+          textColor: colorSchema,
+        })
+      )
+      .default([]),
+
+    // Age Limits
+    ageLimits: z
+      .array(
+        z.object({
+          label: requiredString("Age Limit Label"),
+          value: requiredString("Age Limit Value"),
+          textColor: colorSchema,
+        })
+      )
+      .default([]),
+
+    // Vacancy Details
+    postsWithNoVaccancy: z
+      .array(
+        z.object({
+          PostLevel: requiredString("Post Level"),
+          noVaccancy: requiredString("Number Of Vacancies"),
+          textColor: colorSchema,
+        })
+      )
+      .default([]),
+
+    // Eligibility Details
+    postsWithElligibility: z
+      .array(
+        z.object({
+          PostLevel: requiredString("Post Level"),
+          elligibility: requiredString("Eligibility Criteria"),
+          textColor: colorSchema,
+        })
+      )
+      .default([]),
+
+    // Heading Links
+    headingLinks: z
+      .array(
+        z.object({
+          Level: requiredString("Heading Level"),
+          Link: z
+            .string({
+              required_error: "Link URL is required.",
+              invalid_type_error: "Link URL must be a string.",
+            })
+            .url("Please provide a valid URL."),
+          textColor: colorSchema,
+        })
+      )
+      .default([]),
+  })
+  .superRefine((data, ctx) => {
+    if (data.isDocument && !data.documentHeading?.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["documentHeading"],
+        message:
+          "Document Heading is required when Document status is enabled.",
+      });
+    }
+
+    if (data.isAdmission && !data.admissionHeading?.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["admissionHeading"],
+        message:
+          "Admission Heading is required when Admission status is enabled.",
+      });
+    }
+
+    if (data.isAnswerKey && !data.answerKeyHeading?.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["answerKeyHeading"],
+        message:
+          "Answer Key Heading is required when Answer Key status is enabled.",
+      });
+    }
+
+    if (data.isResultReleased && !data.resultHeading?.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["resultHeading"],
+        message:
+          "Result Heading is required when Result Released status is enabled.",
+      });
+    }
+
+    if (data.isAdmitCardReleased && !data.admitCardHeading?.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["admitCardHeading"],
+        message:
+          "Admit Card Heading is required when Admit Card Released status is enabled.",
+      });
+    }
+  });
