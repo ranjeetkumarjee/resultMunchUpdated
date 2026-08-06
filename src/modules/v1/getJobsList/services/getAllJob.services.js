@@ -84,11 +84,11 @@ export async function getAllJobServices(query) {
     // Aggregation pipeline
     const result = await UniqueJob.aggregate([
       {
-        $match: { isJob: true }, // only jobs
+        $match: { isJob: true, isPublished: true }, // only published jobs are public
       },
-      //   {
-      //     $sort: { createdAt: -1 }, // latest first
-      //   },
+      {
+        $sort: { createdAt: -1 }, // latest first
+      },
       {
         $project: {
           title: 1,
